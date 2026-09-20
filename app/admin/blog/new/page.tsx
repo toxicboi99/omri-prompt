@@ -1,0 +1,1 @@
+import { BlogEditor } from '@/components/admin/blog-editor'; import { AdminScreen } from '@/components/common/page-intro'; export default function NewBlog(){return <AdminScreen title="Create article" description="Write a new article with publication and SEO controls."><BlogEditor/></AdminScreen>}

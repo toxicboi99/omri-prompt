@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Cancel(){return <PageIntro eyebrow="CHECKOUT" title="Checkout canceled" description="No payment was taken. You can return whenever you are ready."/>}

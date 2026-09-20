@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Checkout(){return <PageIntro eyebrow="CHECKOUT" title="Complete your upgrade" description="Payment providers are configured through secure server-side environment variables."/>}

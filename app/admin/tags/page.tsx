@@ -1,0 +1,2 @@
+import { TaxonomyManager } from '@/components/admin/taxonomy-manager'; import { AdminScreen } from '@/components/common/page-intro'; import { prisma } from '@/lib/prisma';
+export default async function Tags(){const items=await prisma.tag.findMany({include:{_count:{select:{prompts:true}}},orderBy:{name:'asc'}});return <AdminScreen title="Tags" description="Create and organize searchable tags applied to prompts."><TaxonomyManager kind="tag" items={items}/></AdminScreen>}

@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function History(){return <PageIntro eyebrow="YOUR ACTIVITY" title="Prompt History" description="Your recent views and copies appear here after you sign in."/>}

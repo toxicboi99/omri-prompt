@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Submissions(){return <PageIntro eyebrow="COMMUNITY" title="My Submissions" description="Track the review status of prompts you have submitted."/>}

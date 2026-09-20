@@ -1,0 +1,1 @@
+import Link from 'next/link'; export default function NotFound(){return <main className="auth-screen"><div className="auth-card"><div className="eyebrow blue">404</div><h1>Page not found.</h1><p>The prompt or page you are looking for may have moved.</p><Link className="primary-action" href="/">Go home</Link><Link href="/prompts">Explore prompts</Link></div></main>}

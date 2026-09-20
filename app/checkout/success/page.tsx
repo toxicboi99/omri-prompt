@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Success(){return <PageIntro eyebrow="OMRI PROMPT PRO" title="Welcome to Pro" description="Your subscription is active. Enjoy the expanded OMRI Prompt experience."/>}

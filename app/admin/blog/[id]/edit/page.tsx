@@ -1,0 +1,2 @@
+import { notFound } from 'next/navigation'; import { BlogEditor } from '@/components/admin/blog-editor'; import { AdminScreen } from '@/components/common/page-intro'; import { prisma } from '@/lib/prisma';
+export default async function EditBlog({params}:{params:Promise<{id:string}>}){const post=await prisma.blogPost.findUnique({where:{id:(await params).id}});if(!post)notFound();return <AdminScreen title="Edit article" description="Update editorial content and its SEO metadata."><BlogEditor post={post}/></AdminScreen>}

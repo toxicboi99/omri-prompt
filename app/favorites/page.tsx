@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Favorites(){return <PageIntro eyebrow="YOUR LIBRARY" title="My Favorites" description="You have not saved any prompts yet. Explore the library to find your next idea."/>}

@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Settings(){return <PageIntro eyebrow="ACCOUNT" title="Settings" description="Manage account, privacy, and notification preferences."/>}

@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default function Collections(){return <PageIntro eyebrow="YOUR LIBRARY" title="My Collections" description="Organize the prompts you love into reusable creative sets."><button className="primary-action">+ Create collection</button></PageIntro>}

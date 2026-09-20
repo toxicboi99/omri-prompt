@@ -1,0 +1,2 @@
+import { TaxonomyManager } from '@/components/admin/taxonomy-manager'; import { AdminScreen } from '@/components/common/page-intro'; import { prisma } from '@/lib/prisma';
+export default async function Categories(){const items=await prisma.category.findMany({include:{_count:{select:{prompts:true}}},orderBy:{displayOrder:'asc'}});return <AdminScreen title="Categories" description="Manage category metadata, order, imagery, and publication state."><TaxonomyManager kind="category" items={items}/></AdminScreen>}

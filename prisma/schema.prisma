@@ -1,0 +1,390 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+}
+
+model User {
+  id String @id @default(cuid())
+  name String?
+  email String @unique
+  passwordHash String?
+  image String?
+  role Role @default(USER)
+  accounts Account[]
+  sessions Session[]
+  prompts Prompt[]
+  favorites Favorite[]
+  collections Collection[]
+  history PromptHistory[]
+  submissions Submission[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id String @id @default(cuid())
+  userId String
+  type String
+  provider String
+  providerAccountId String
+  refresh_token String? @db.Text
+  access_token String? @db.Text
+  expires_at Int?
+  token_type String?
+  scope String?
+  id_token String? @db.Text
+  session_state String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id String @id @default(cuid())
+  sessionToken String @unique
+  userId String
+  expires DateTime
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token String @unique
+  expires DateTime
+  @@unique([identifier, token])
+}
+
+model Category {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  description String @db.Text
+  imageUrl String?
+  seoTitle String?
+  seoDescription String? @db.Text
+  displayOrder Int @default(0)
+  status ContentStatus @default(PUBLISHED)
+  prompts Prompt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Style {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  description String @db.Text
+  imageUrl String?
+  seoTitle String?
+  seoDescription String? @db.Text
+  status ContentStatus @default(PUBLISHED)
+  prompts Prompt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tag {
+  id String @id @default(cuid())
+  name String @unique
+  slug String @unique
+  prompts PromptTag[]
+}
+
+model Image {
+  id String @id @default(cuid())
+  publicId String @unique
+  url String
+  width Int
+  height Int
+  format String
+  altText String
+  prompts Prompt[]
+  submissions Submission[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Prompt {
+  id String @id @default(cuid())
+  title String
+  slug String @unique
+  prompt String @db.Text
+  description String @db.Text
+  categoryId String
+  styleId String
+  gender String?
+  location String?
+  occasion String?
+  camera String?
+  lighting String?
+  aspectRatio String?
+  mood String?
+  clothing String?
+  exampleImageId String?
+  authorId String?
+  viewCount Int @default(0)
+  copyCount Int @default(0)
+  shareCount Int @default(0)
+  favoriteCount Int @default(0)
+  isFeatured Boolean @default(false)
+  isTrending Boolean @default(false)
+  status ContentStatus @default(DRAFT)
+  seoTitle String?
+  seoDescription String? @db.Text
+  category Category @relation(fields: [categoryId], references: [id])
+  style Style @relation(fields: [styleId], references: [id])
+  exampleImage Image? @relation(fields: [exampleImageId], references: [id])
+  author User? @relation(fields: [authorId], references: [id])
+  tags PromptTag[]
+  favorites Favorite[]
+  history PromptHistory[]
+  views PromptView[]
+  copies PromptCopy[]
+  shares PromptShare[]
+  collectionItems CollectionPrompt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([categoryId, status])
+  @@index([styleId, status])
+}
+
+model PromptTag {
+  promptId String
+  tagId String
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  @@id([promptId, tagId])
+}
+
+model Favorite {
+  id String @id @default(cuid())
+  userId String
+  promptId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([userId, promptId])
+}
+
+model Collection {
+  id String @id @default(cuid())
+  userId String
+  name String
+  slug String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompts CollectionPrompt[]
+  createdAt DateTime @default(now())
+  @@unique([userId, slug])
+}
+
+model CollectionPrompt {
+  collectionId String
+  promptId String
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([collectionId, promptId])
+}
+
+model PromptHistory {
+  id String @id @default(cuid())
+  userId String
+  promptId String
+  copied Boolean @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  viewedAt DateTime @default(now())
+  @@index([userId, viewedAt])
+}
+
+model PromptView {
+  id String @id @default(cuid())
+  promptId String
+  anonymousId String?
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@index([promptId, createdAt])
+}
+
+model PromptCopy {
+  id String @id @default(cuid())
+  promptId String
+  anonymousId String?
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@index([promptId, createdAt])
+}
+
+model PromptShare {
+  id String @id @default(cuid())
+  promptId String
+  network String?
+  anonymousId String?
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@index([promptId, createdAt])
+}
+
+model Submission {
+  id String @id @default(cuid())
+  userId String
+  title String
+  prompt String @db.Text
+  description String @db.Text
+  category String
+  style String
+  tags String[]
+  imageId String?
+  status ContentStatus @default(PENDING)
+  reviewNote String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image Image? @relation(fields: [imageId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlogCategory {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  posts BlogPost[]
+}
+
+model BlogPost {
+  id String @id @default(cuid())
+  title String
+  slug String @unique
+  excerpt String @db.Text
+  content String @db.Text
+  featuredImageUrl String?
+  authorName String
+  categoryId String?
+  seoTitle String?
+  seoDescription String? @db.Text
+  status ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  category BlogCategory? @relation(fields: [categoryId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AITool {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  description String @db.Text
+  logoUrl String?
+  website String
+  affiliateUrl String?
+  isFeatured Boolean @default(false)
+  status ContentStatus @default(PUBLISHED)
+  features String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AffiliateLink {
+  id String @id @default(cuid())
+  label String
+  url String
+  disclosure String @db.Text
+  status ContentStatus @default(PUBLISHED)
+  clicks AffiliateClick[]
+  createdAt DateTime @default(now())
+}
+
+model AffiliateClick {
+  id String @id @default(cuid())
+  affiliateLinkId String
+  anonymousId String?
+  affiliateLink AffiliateLink @relation(fields: [affiliateLinkId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@index([affiliateLinkId, createdAt])
+}
+
+model Subscription {
+  id String @id @default(cuid())
+  userId String
+  provider String
+  providerSubscriptionId String @unique
+  status SubscriptionStatus
+  plan String
+  currentPeriodEnd DateTime
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id String @id @default(cuid())
+  userId String
+  providerPaymentId String @unique
+  amount Int
+  currency String
+  status String
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  id String @id @default(cuid())
+  key String @unique
+  value String @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+model AdPlacement {
+  id String @id @default(cuid())
+  name String
+  placement String
+  configuration String @db.Text
+  pageTargeting String?
+  deviceTargeting String?
+  status ContentStatus @default(DRAFT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([name, placement])
+}
+
+model PremiumProduct {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  description String @db.Text
+  price Int
+  currency String @default("USD")
+  imageUrl String?
+  status ContentStatus @default(DRAFT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id String @id @default(cuid())
+  event String
+  promptId String?
+  userId String?
+  anonymousId String?
+  metadata Json?
+  createdAt DateTime @default(now())
+  @@index([event, createdAt])
+  @@index([promptId, createdAt])
+}

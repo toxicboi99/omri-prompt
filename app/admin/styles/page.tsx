@@ -1,0 +1,2 @@
+import { TaxonomyManager } from '@/components/admin/taxonomy-manager'; import { AdminScreen } from '@/components/common/page-intro'; import { prisma } from '@/lib/prisma';
+export default async function Styles(){const items=await prisma.style.findMany({include:{_count:{select:{prompts:true}}},orderBy:{name:'asc'}});return <AdminScreen title="Styles" description="Manage the visual style taxonomy."><TaxonomyManager kind="style" items={items}/></AdminScreen>}

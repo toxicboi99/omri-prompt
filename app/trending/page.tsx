@@ -1,0 +1,2 @@
+import { PageIntro } from '@/components/common/page-intro'; import { PromptGrid } from '@/components/prompts/prompt-grid'; import { trendingPrompts } from '@/lib/repositories/content';
+export default async function Trending(){ const prompts = await trendingPrompts(24); return <PageIntro eyebrow="RECENT CREATOR ACTIVITY" title="Trending AI Photo Prompts" description="Ranked by recent views, copies, shares, and recency—not just lifetime totals."><PromptGrid items={prompts}/></PageIntro>; }

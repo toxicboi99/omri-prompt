@@ -1,0 +1,1 @@
+import { PageIntro } from '@/components/common/page-intro'; export default async function Collection({params}:{params:Promise<{slug:string}>}){return <PageIntro eyebrow="COLLECTION" title={(await params).slug.replaceAll('-',' ')} description="A focused set of saved AI photo prompts."/>}

@@ -1,0 +1,2 @@
+import { PageIntro } from '@/components/common/page-intro'; import { PromptGrid } from '@/components/prompts/prompt-grid'; import { findPublishedPrompts } from '@/lib/repositories/prompts';
+export default async function NewPrompts(){ const prompts = await findPublishedPrompts({ sort: 'latest', limit: 32 }); return <PageIntro eyebrow="JUST PUBLISHED" title="Latest AI Photo Prompts" description="Discover the newest prompts added to OMRI Prompt."><PromptGrid items={prompts.items}/></PageIntro>; }

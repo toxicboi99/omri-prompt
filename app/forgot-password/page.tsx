@@ -1,0 +1,1 @@
+import { AuthScreen } from '@/components/common/page-intro'; export default function Forgot(){return <AuthScreen title="Reset your password" description="Enter your email and we will send a secure reset link."/>}

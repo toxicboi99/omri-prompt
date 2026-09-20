@@ -1,0 +1,1 @@
+import { AdminScreen } from '@/components/common/page-intro'; export default function Admin(){return <AdminScreen title="Dashboard" description="A clear view of content performance and moderation work."/>}

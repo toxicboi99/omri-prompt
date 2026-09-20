@@ -1,69 +1,165 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { SiteFooter, SiteHeader } from '@/components/common/site-chrome';
+import { PromptGrid } from '@/components/prompts/prompt-grid';
+import { getCategories, getPublishedPosts, getPublishedTools, getStyles, trendingPrompts } from '@/lib/repositories/content';
+import { findPublishedPrompts } from '@/lib/repositories/prompts';
+import { getHeroSettings } from '@/lib/site-settings';
 
-export default function Home() {
+export default async function Home() {
+  const [hero, trending, latest, categories, styles, tools, posts] = await Promise.all([
+    getHeroSettings(),
+    trendingPrompts(4),
+    findPublishedPrompts({ sort: 'latest', limit: 4 }),
+    getCategories(),
+    getStyles(),
+    getPublishedTools(),
+    getPublishedPosts(),
+  ]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <SiteHeader />
+      <main className="page-shell">
+        <section
+          className="hero-section"
+          style={hero.imageUrl ? {
+            backgroundImage: `linear-gradient(rgba(7, 18, 35, ${hero.overlayOpacity / 100}), rgba(7, 18, 35, ${Math.min(0.8, hero.overlayOpacity / 100 + 0.15)})), url(${hero.imageUrl})`,
+          } : undefined}
+        >
+          <div className="hero-content">
+            <span className="eyebrow">THE VISUAL PROMPT LIBRARY</span>
+            <h1>{hero.title}</h1>
+            <p>{hero.subtitle}</p>
+
+            <form action="/search" className="hero-search">
+              <input name="q" placeholder={hero.searchPlaceholder} aria-label="Search prompts" />
+              <button type="submit">Search</button>
+            </form>
+
+            <div className="hero-actions">
+              <Link href={hero.primaryCtaUrl} className="primary-action">{hero.primaryCtaText}</Link>
+              <Link href={hero.secondaryCtaUrl} className="secondary-action">{hero.secondaryCtaText}</Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section-shell">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">DISCOVER WHAT’S HOT</span>
+              <h2>Trending prompts</h2>
+            </div>
+            <Link href="/trending">See all prompts</Link>
+          </div>
+          <PromptGrid items={trending} />
+        </section>
+
+        <section className="section-shell soft-panel">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">BROWSE BY SUBJECT</span>
+              <h2>Popular categories</h2>
+            </div>
+            <Link href="/categories">All categories</Link>
+          </div>
+          <div className="category-grid">
+            {categories.slice(0, 8).map((category) => (
+              <Link href={`/category/${category.slug}`} key={category.id} className="category-card">
+                <div className="category-card-media" style={category.imageUrl ? { backgroundImage: `url(${category.imageUrl})` } : undefined} />
+                <div className="category-card-copy">
+                  <span>{category._count.prompts} prompts</span>
+                  <h3>{category.name}</h3>
+                  <p>{category.description}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-shell">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">FRESHLY PUBLISHED</span>
+              <h2>Latest prompts</h2>
+            </div>
+            <Link href="/prompts">View all prompts</Link>
+          </div>
+          <PromptGrid items={latest.items} />
+        </section>
+
+        <section className="section-shell soft-panel">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">VISUAL LANGUAGE</span>
+              <h2>Explore styles</h2>
+            </div>
+            <Link href="/styles">All styles</Link>
+          </div>
+          <div className="style-grid">
+            {styles.slice(0, 8).map((style) => (
+              <Link href={`/style/${style.slug}`} key={style.id} className="style-card">
+                <div className="style-card-media" style={style.imageUrl ? { backgroundImage: `url(${style.imageUrl})` } : undefined} />
+                <div className="style-card-copy">
+                  <h3>{style.name}</h3>
+                  <p>{style.description}</p>
+                  <span>{style._count.prompts} prompts</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-shell">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">CREATE ANYWHERE</span>
+              <h2>AI image tools</h2>
+            </div>
+            <Link href="/ai-tools">Explore tools</Link>
+          </div>
+          <div className="tool-grid">
+            {tools.slice(0, 6).map((tool) => (
+              <article key={tool.id} className="tool-card">
+                <div className="tool-card-top">{tool.name}</div>
+                <p>{tool.description}</p>
+                <a href={tool.affiliateUrl || tool.website} rel="sponsored noopener" target="_blank">Visit tool</a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-shell soft-panel">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">FROM THE JOURNAL</span>
+              <h2>Creative inspiration</h2>
+            </div>
+            <Link href="/blog">Read the journal</Link>
+          </div>
+          <div className="blog-grid">
+            {posts.slice(0, 3).map((post) => (
+              <article key={post.id} className="blog-card">
+                <small>{post.category?.name ?? 'GUIDES'}</small>
+                <h3>{post.title}</h3>
+                <p>{post.excerpt}</p>
+                <Link href={`/blog/${post.slug}`}>Read article</Link>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-shell newsletter-shell">
+          <div>
+            <span className="eyebrow">NEWSLETTER</span>
+            <h2>Creative prompts sent weekly</h2>
+          </div>
+          <form action="/contact" className="newsletter-form">
+            <input type="email" placeholder="Email address" aria-label="Email address" />
+            <button type="submit">Join now</button>
+          </form>
+        </section>
       </main>
-    </div>
+      <SiteFooter />
+    </>
   );
 }
