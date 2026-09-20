@@ -23,7 +23,6 @@ export function PromptGrid({ items }: { items: PromptWithRelations[] }) {
             style={prompt.exampleImage?.url ? { backgroundImage: `url(${prompt.exampleImage.url})` } : undefined}
             aria-label={`View ${prompt.title}`}
           >
-            <span className="prompt-card-badge">{prompt.style.name}</span>
           </Link>
 
           <div className="prompt-card-body">

@@ -11,7 +11,6 @@ export function SiteHeader() {
         <Link href="/">Home</Link>
         <Link href="/prompts">Prompts</Link>
         <Link href="/categories">Categories</Link>
-        <Link href="/styles">Styles</Link>
         <Link href="/blog">Journal</Link>
         <Link href="/ai-tools">AI Tools</Link>
       </nav>
@@ -44,7 +43,6 @@ export function SiteFooter() {
           <h3>Discover</h3>
           <Link href="/prompts">Prompts</Link>
           <Link href="/categories">Categories</Link>
-          <Link href="/styles">Styles</Link>
           <Link href="/trending">Trending</Link>
         </div>
 

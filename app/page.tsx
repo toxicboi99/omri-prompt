@@ -1,17 +1,17 @@
 import Link from 'next/link';
 import { SiteFooter, SiteHeader } from '@/components/common/site-chrome';
+import { CategorySlider } from '@/components/common/category-slider';
 import { PromptGrid } from '@/components/prompts/prompt-grid';
-import { getCategories, getPublishedPosts, getPublishedTools, getStyles, trendingPrompts } from '@/lib/repositories/content';
+import { getCategories, getPublishedPosts, getPublishedTools, trendingPrompts } from '@/lib/repositories/content';
 import { findPublishedPrompts } from '@/lib/repositories/prompts';
 import { getHeroSettings } from '@/lib/site-settings';
 
 export default async function Home() {
-  const [hero, trending, latest, categories, styles, tools, posts] = await Promise.all([
+  const [hero, trending, latest, categories, tools, posts] = await Promise.all([
     getHeroSettings(),
     trendingPrompts(4),
     findPublishedPrompts({ sort: 'latest', limit: 4 }),
     getCategories(),
-    getStyles(),
     getPublishedTools(),
     getPublishedPosts(),
   ]);
@@ -62,18 +62,7 @@ export default async function Home() {
             </div>
             <Link href="/categories">All categories</Link>
           </div>
-          <div className="category-grid">
-            {categories.slice(0, 8).map((category) => (
-              <Link href={`/category/${category.slug}`} key={category.id} className="category-card">
-                <div className="category-card-media" style={category.imageUrl ? { backgroundImage: `url(${category.imageUrl})` } : undefined} />
-                <div className="category-card-copy">
-                  <span>{category._count.prompts} prompts</span>
-                  <h3>{category.name}</h3>
-                  <p>{category.description}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <CategorySlider categories={categories.slice(0, 8)} />
         </section>
 
         <section className="section-shell">
@@ -85,28 +74,6 @@ export default async function Home() {
             <Link href="/prompts">View all prompts</Link>
           </div>
           <PromptGrid items={latest.items} />
-        </section>
-
-        <section className="section-shell soft-panel">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">VISUAL LANGUAGE</span>
-              <h2>Explore styles</h2>
-            </div>
-            <Link href="/styles">All styles</Link>
-          </div>
-          <div className="style-grid">
-            {styles.slice(0, 8).map((style) => (
-              <Link href={`/style/${style.slug}`} key={style.id} className="style-card">
-                <div className="style-card-media" style={style.imageUrl ? { backgroundImage: `url(${style.imageUrl})` } : undefined} />
-                <div className="style-card-copy">
-                  <h3>{style.name}</h3>
-                  <p>{style.description}</p>
-                  <span>{style._count.prompts} prompts</span>
-                </div>
-              </Link>
-            ))}
-          </div>
         </section>
 
         <section className="section-shell">

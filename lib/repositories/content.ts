@@ -1,11 +1,10 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 
-export const promptInclude = { category: true, style: true, exampleImage: true, tags: { include: { tag: true } } } satisfies Prisma.PromptInclude;
+export const promptInclude = { category: true, exampleImage: true, tags: { include: { tag: true } } } satisfies Prisma.PromptInclude;
 export type PromptWithRelations = Prisma.PromptGetPayload<{ include: typeof promptInclude }>;
 
 export async function getCategories() { return prisma.category.findMany({ where: { status: 'PUBLISHED' }, include: { _count: { select: { prompts: { where: { status: 'PUBLISHED' } } } } }, orderBy: { displayOrder: 'asc' } }); }
-export async function getStyles() { return prisma.style.findMany({ where: { status: 'PUBLISHED' }, include: { _count: { select: { prompts: { where: { status: 'PUBLISHED' } } } } }, orderBy: { name: 'asc' } }); }
 export async function getPublishedTools() { return prisma.aITool.findMany({ where: { status: 'PUBLISHED' }, orderBy: [{ isFeatured: 'desc' }, { name: 'asc' }] }); }
 export async function getPublishedPosts() { return prisma.blogPost.findMany({ where: { status: 'PUBLISHED' }, include: { category: true }, orderBy: { publishedAt: 'desc' } }); }
 export async function trendingPrompts(take = 12) {

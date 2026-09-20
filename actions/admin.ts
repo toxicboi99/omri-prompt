@@ -8,7 +8,7 @@ import { slugify } from '@/lib/slug';
 
 const status = (value: FormDataEntryValue | null) => Object.values(ContentStatus).includes(value as ContentStatus) ? value as ContentStatus : 'DRAFT';
 function text(data: FormData, key: string) { return String(data.get(key) ?? '').trim(); }
-function invalidate() { ['/', '/prompts', '/categories', '/styles', '/blog', '/ai-tools', '/trending', '/new', '/sitemap.xml'].forEach((path) => revalidatePath(path)); }
+function invalidate() { ['/', '/prompts', '/categories', '/blog', '/ai-tools', '/trending', '/new', '/sitemap.xml'].forEach((path) => revalidatePath(path)); }
 
 async function uploadOptionalImage(data: FormData, fieldName: string, altText: string) {
   const fileEntry = data.get(fieldName);
@@ -44,8 +44,8 @@ async function saveImageRecordFromUrl(url: string, altText: string) {
 }
 
 export async function saveHero(data: FormData) { await requireAdmin(); const value = { title: text(data, 'title'), subtitle: text(data, 'subtitle'), searchPlaceholder: text(data, 'searchPlaceholder'), primaryCtaText: text(data, 'primaryCtaText'), primaryCtaUrl: text(data, 'primaryCtaUrl'), secondaryCtaText: text(data, 'secondaryCtaText'), secondaryCtaUrl: text(data, 'secondaryCtaUrl'), imageUrl: text(data, 'imageUrl'), overlayOpacity: Math.min(100, Math.max(0, Number(data.get('overlayOpacity')) || 35)), alignment: 'left', enabled: data.get('enabled') === 'on' }; await prisma.siteSetting.upsert({ where: { key: 'homepage.hero' }, create: { key: 'homepage.hero', value: JSON.stringify(value) }, update: { value: JSON.stringify(value) } }); revalidatePath('/'); }
-export async function createTaxonomy(data: FormData) { await requireAdmin(); const kind = text(data, 'kind'); const name = text(data, 'name'); if (!name) throw new Error('Name is required'); const slug = text(data, 'slug') || slugify(name); const description = text(data, 'description'); const typedUrl = text(data, 'imageUrl'); const uploadedImage = await uploadOptionalImage(data, 'image', `${name} ${kind} artwork`); const payload = { name, slug, description, status: status(data.get('status')), imageUrl: uploadedImage?.url ?? (typedUrl || null) }; if (kind === 'category') await prisma.category.create({ data: { ...payload, description: description || 'Category description' } }); else if (kind === 'style') await prisma.style.create({ data: { ...payload, description: description || 'Style description' } }); else await prisma.tag.create({ data: { name, slug } }); invalidate(); }
-export async function deleteTaxonomy(data: FormData) { await requireAdmin(); const kind = text(data, 'kind'); const id = text(data, 'id'); if (kind === 'category') await prisma.category.delete({ where: { id } }); else if (kind === 'style') await prisma.style.delete({ where: { id } }); else await prisma.tag.delete({ where: { id } }); invalidate(); }
+export async function createTaxonomy(data: FormData) { await requireAdmin(); const kind = text(data, 'kind'); const name = text(data, 'name'); if (!name) throw new Error('Name is required'); const slug = text(data, 'slug') || slugify(name); const description = text(data, 'description'); const typedUrl = text(data, 'imageUrl'); const uploadedImage = await uploadOptionalImage(data, 'image', `${name} ${kind} artwork`); const payload = { name, slug, description, status: status(data.get('status')), imageUrl: uploadedImage?.url ?? (typedUrl || null) }; if (kind === 'category') await prisma.category.create({ data: { ...payload, description: description || 'Category description' } }); else await prisma.tag.create({ data: { name, slug } }); invalidate(); }
+export async function deleteTaxonomy(data: FormData) { await requireAdmin(); const kind = text(data, 'kind'); const id = text(data, 'id'); if (kind === 'category') await prisma.category.delete({ where: { id } }); else await prisma.tag.delete({ where: { id } }); invalidate(); }
 export async function savePrompt(data: FormData) { await requireAdmin(); const id = text(data, 'id'); const title = text(data, 'title'); const tags = text(data, 'tags').split(',').map((tag) => tag.trim()).filter(Boolean); const typedImageUrl = text(data, 'imageUrl'); const uploadedImage = await uploadOptionalImage(data, 'image', `${title || 'Prompt'} visual`); let exampleImageId: string | null = null;
 
   if (uploadedImage) {
@@ -74,7 +74,6 @@ export async function savePrompt(data: FormData) { await requireAdmin(); const i
   }
 
   const categoryId = text(data, 'categoryId');
-  const styleId = text(data, 'styleId');
   const body = {
     title,
     slug: text(data, 'slug') || slugify(title),
@@ -93,12 +92,11 @@ export async function savePrompt(data: FormData) { await requireAdmin(); const i
     isTrending: data.get('isTrending') === 'on',
   };
 
-  if (!body.title || !body.description || !body.prompt || !categoryId || !styleId) throw new Error('Complete all required prompt fields');
+  if (!body.title || !body.description || !body.prompt || !categoryId) throw new Error('Complete all required prompt fields');
   const tagLinks = await Promise.all(tags.map(async (name) => ({ tag: { connectOrCreate: { where: { slug: slugify(name) }, create: { name, slug: slugify(name) } } } })));
 
   const promptRelationData = {
     category: { connect: { id: categoryId } },
-    style: { connect: { id: styleId } },
   };
 
   if (id) {

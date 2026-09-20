@@ -4,11 +4,9 @@ import type { Prompt } from '@prisma/client';
 export function PromptEditor({
   prompt,
   categories,
-  styles,
 }: {
   prompt?: Prompt & { exampleImage?: { url: string | null } | null };
   categories: { id: string; name: string }[];
-  styles: { id: string; name: string }[];
 }) {
   return (
     <form action={savePrompt} className="form-card admin-form">
@@ -45,15 +43,6 @@ export function PromptEditor({
           </select>
         </label>
 
-        <label>
-          Style
-          <select name="styleId" required defaultValue={prompt?.styleId || ''}>
-            <option value="" disabled>Select style</option>
-            {styles.map((item) => (
-              <option value={item.id} key={item.id}>{item.name}</option>
-            ))}
-          </select>
-        </label>
       </div>
 
       <div className="form-row">

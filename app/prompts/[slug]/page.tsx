@@ -23,7 +23,6 @@ export default async function PromptDetail({ params }: { params: Promise<{ slug:
   const related = await getRelatedPrompts(prompt);
   const metadata = [
     ['Category', prompt.category.name],
-    ['Style', prompt.style.name],
     ['Camera', prompt.camera],
     ['Lighting', prompt.lighting],
     ['Aspect ratio', prompt.aspectRatio],
@@ -44,7 +43,7 @@ export default async function PromptDetail({ params }: { params: Promise<{ slug:
           <div className="detail-image" style={prompt.exampleImage?.url ? { backgroundImage: `url(${prompt.exampleImage.url})` } : undefined} />
 
           <div className="detail-copy">
-            <span className="eyebrow">{prompt.style.name.toUpperCase()} PROMPT</span>
+            <span className="eyebrow">AI PHOTO PROMPT</span>
             <h1>{prompt.title}</h1>
             <p className="detail-description">{prompt.description}</p>
 

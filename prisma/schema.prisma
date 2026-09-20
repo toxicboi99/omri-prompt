@@ -90,20 +90,6 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
-model Style {
-  id String @id @default(cuid())
-  name String
-  slug String @unique
-  description String @db.Text
-  imageUrl String?
-  seoTitle String?
-  seoDescription String? @db.Text
-  status ContentStatus @default(PUBLISHED)
-  prompts Prompt[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Tag {
   id String @id @default(cuid())
   name String @unique
@@ -132,7 +118,6 @@ model Prompt {
   prompt String @db.Text
   description String @db.Text
   categoryId String
-  styleId String
   gender String?
   location String?
   occasion String?
@@ -153,7 +138,6 @@ model Prompt {
   seoTitle String?
   seoDescription String? @db.Text
   category Category @relation(fields: [categoryId], references: [id])
-  style Style @relation(fields: [styleId], references: [id])
   exampleImage Image? @relation(fields: [exampleImageId], references: [id])
   author User? @relation(fields: [authorId], references: [id])
   tags PromptTag[]
@@ -166,7 +150,6 @@ model Prompt {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([categoryId, status])
-  @@index([styleId, status])
 }
 
 model PromptTag {
@@ -253,7 +236,6 @@ model Submission {
   prompt String @db.Text
   description String @db.Text
   category String
-  style String
   tags String[]
   imageId String?
   status ContentStatus @default(PENDING)
