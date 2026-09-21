@@ -767,6 +767,16 @@ button { cursor: pointer; }
   box-shadow: 0 18px 32px rgba(31, 72, 119, 0.2);
 }
 
+.copy-prompt-button,
+.detail-actions .copy-prompt-button {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.copy-prompt-button.copied,
+.detail-actions .copy-prompt-button.copied {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+}
+
 .site-signup:hover,
 .primary-action:hover,
 .secondary-action:hover,

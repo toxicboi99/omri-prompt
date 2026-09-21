@@ -17,5 +17,8 @@ export async function findPublishedPrompts(filters: PromptFilters = {}) {
 }
 
 export async function listPublishedPrompts(query?: string) { return (await findPublishedPrompts({ q: query, limit: 48 })).items; }
-export async function getPublishedPrompt(slug: string) { return prisma.prompt.findFirst({ where: { slug, status: 'PUBLISHED' }, include: promptInclude }); }
+export async function getPublishedPrompt(slug: string) {
+  const decodedSlug = decodeURIComponent(slug);
+  return prisma.prompt.findFirst({ where: { slug: decodedSlug, status: 'PUBLISHED' }, include: promptInclude });
+}
 export async function getRelatedPrompts(prompt: PromptWithRelations) { return prisma.prompt.findMany({ where: { status: 'PUBLISHED', id: { not: prompt.id }, categoryId: prompt.categoryId }, include: promptInclude, take: 4, orderBy: [{ copyCount: 'desc' }, { createdAt: 'desc' }] }); }
