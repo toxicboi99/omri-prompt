@@ -62,7 +62,7 @@ export default async function Home() {
             </div>
             <Link href="/categories">All categories</Link>
           </div>
-          <CategorySlider categories={categories.slice(0, 8)} />
+          <CategorySlider categories={categories} />
         </section>
 
         <section className="section-shell">

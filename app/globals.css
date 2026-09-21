@@ -1430,7 +1430,7 @@ button { cursor: pointer; }
   .site-signup { display: none; }
 
   .hero-section {
-    min-height: 480px;
+    min-height: calc(100svh - 100px);
     padding: 28px 18px 32px;
     border-radius: 24px;
   }
@@ -1447,7 +1447,21 @@ button { cursor: pointer; }
     align-items: stretch;
   }
 
-  .prompt-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .prompt-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .prompt-card { border-radius: 14px; }
+  .prompt-card-body { gap: 8px; padding: 10px 10px 12px; }
+  .prompt-card-meta { display: block; font-size: 0.58rem; }
+  .prompt-card-meta span { display: block; }
+  .prompt-card-meta span + span { margin-top: 3px; }
+  .prompt-card h3 { font-size: 0.9rem; }
+  .prompt-card p { font-size: 0.74rem; }
+  .prompt-card-actions { display: block; font-size: 0.62rem; }
+  .prompt-card-actions .copy-prompt-button { width: 100%; margin-top: 8px; padding: 0.5rem 0.45rem; }
+
   .category-grid,
   .style-grid,
   .tool-grid,
@@ -1458,7 +1472,20 @@ button { cursor: pointer; }
     align-items: flex-start;
   }
 
-  .category-slider-track .category-card { flex-basis: 82%; }
+  .category-slider-controls { display: none; }
+  .category-slider-track {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    overflow: visible;
+    padding: 0;
+  }
+  .category-slider-track .category-card { min-width: 0; }
+  .category-card { border-radius: 14px; }
+  .category-card-media { height: 140px; }
+  .category-card-copy { padding: 12px; }
+  .category-card-copy h3 { font-size: 1rem; }
+  .category-card-copy p { font-size: 0.78rem; }
 
   .newsletter-form {
     width: 100%;
