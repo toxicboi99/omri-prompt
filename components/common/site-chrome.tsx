@@ -1,13 +1,19 @@
+'use client';
+
 import Link from 'next/link';
 import { BrandLogo } from '@/components/common/brand';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
 
 export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header className="site-header">
       <Link href="/" className="site-logo" aria-label="OMRI Prompt home">
         <BrandLogo className="site-logo-image" />
       </Link>
-      <nav aria-label="Primary navigation">
+      <nav className={menuOpen ? 'is-open' : ''} aria-label="Primary navigation">
         <Link href="/">Home</Link>
         <Link href="/prompts">Prompts</Link>
         <Link href="/categories">Categories</Link>
@@ -18,6 +24,15 @@ export function SiteHeader() {
         <Link href="/search" aria-label="Search prompts" className="icon-link">Search</Link>
         <Link href="/login">Log in</Link>
         <Link className="site-signup" href="/register">Create account</Link>
+        <button
+          type="button"
+          className="mobile-menu-toggle"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+        </button>
       </div>
     </header>
   );
