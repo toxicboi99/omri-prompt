@@ -1023,6 +1023,12 @@ button { cursor: pointer; }
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
+.prompt-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .prompt-card:hover,
 .category-card:hover,
 .style-card:hover,
@@ -1059,6 +1065,7 @@ button { cursor: pointer; }
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1;
   padding: 18px 18px 16px;
 }
 
@@ -1082,8 +1089,14 @@ button { cursor: pointer; }
 
 .prompt-card p {
   margin: 0;
+  min-height: calc(3 * 1.8em);
   color: var(--muted);
   font-size: 0.92rem;
+  line-height: 1.8;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .prompt-card-actions {
@@ -1091,7 +1104,7 @@ button { cursor: pointer; }
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 4px;
+  margin-top: auto;
   color: var(--muted);
   font-size: 0.72rem;
 }
